@@ -1,0 +1,41 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include "lista.h"
+
+struct lista_t
+{
+  struct lista_t *next;
+  el element;
+};
+
+lista initialize_list(el element)
+{
+  lista new = malloc(sizeof(struct lista_t));
+  new->next = NULL;
+  new->element = element;
+  return new;
+}
+
+int append_elem_poz(lista list, el element, size_t poz)
+{
+  for(;poz > 0;poz--){
+    if(list->next == NULL){
+      return -1;//append nu a functionat
+    }
+    list = list->next;
+  }
+
+  lista copie = list->next;
+  lista new = initialize_list(element);
+  new->next = copie;
+  list->next = new;
+  return 1;
+}
+
+lista append_front(lista list, el element)
+{
+  lista new = initialize_list(element);
+  new->next = list;
+  return new;
+}
+

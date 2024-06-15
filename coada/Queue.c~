@@ -1,0 +1,15 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include "queue.h"
+
+struct node
+{
+  Element_t value;
+  struct node *next;
+}
+  
+struct Queue
+{
+  struct node *first;
+  struct node *last;
+}

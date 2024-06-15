@@ -1,0 +1,167 @@
+#include <stdio.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <string.h>
+#include <ctype.h>
+#include "stack.h"
+
+void add_to_stack(Stack_t stack, char ch)
+{
+  push(stack, (Value_t){.value.ch = ch, .type = Char});
+}
+
+int8_t get_priority(int operator)
+{
+  if((operator == '(') || (operator == ')')){
+    return 0;
+  }
+  else if((operator == '*') || (operator == '/')){
+    return 1;
+  }
+  else if((operator == '+') || (operator == '-')){
+    return 2;
+  }
+  else{
+    return -1;
+  }
+}
+
+bool bracket_end(Stack_t expression, Stack_t operatori)
+{
+  Value_t val;
+  if(pop(operatori, &val) == true){
+    while((return_value(val) != '(') && (size(operatori) > 0)){
+      if(pop(operatori, &val) == false){
+	printf("Error at pop operation");
+	return false;
+      }
+      else{
+	push(expression, val);
+      }
+    }
+    if(size(operatori) <= 0){
+      printf("Error, no '(' sign");
+      return false;
+    }
+    else{
+      return true;
+    }
+  }
+  printf("Error, empty stack");
+  return false;
+}
+
+bool priority_one(Stack_t expression, Stack_t operatori)
+{
+  Value_t val;
+  
+  if(pop(operatori, &val) == false){
+    return false;
+  }
+  else{
+    return pop(operatori, top_element(expression));
+  }
+}
+
+bool priority_two(Stack_t expression, Stack_t operatori)
+{
+  Stack_t operators_prior_two = init_stack(0);
+  Value_t val = empty_val();
+  while((size(operatori) > 0) && (return_value(val) != '(')){
+    if(pop(operatori, &val) == false){
+      destruct(operators_prior_two);
+      return false;
+    }
+    if(get_priority(return_value(val)) == 1){
+      push(expression, val);
+    }
+    else{
+      push(operators_prior_two, val);
+    }
+  }
+  while(size(operators_prior_two) > 0){
+    pop(operators_prior_two, top_element(operatori));
+  }
+  destruct(operators_prior_two);
+  return true;
+}
+
+bool sign_operation(Stack_t expression, Stack_t operatori)
+{
+  Value_t val;
+  if(peek(operatori, &val) == false){
+    printf("Empty stack");
+    return false;
+  }
+  int8_t priority = get_priority(return_value(val));
+  
+  switch(priority){
+  case 0:
+    if(return_value(val) == ')'){
+      return bracket_end(expression, operatori);
+    }
+    else{
+      return true;
+    }
+    break;
+  case 1:
+    return priority_one(expression, operatori)
+    break;
+  case 2:
+    return priority_two(expression, operatori);
+    break;
+  }
+}
+
+bool parse_expression(Stack_t expression)
+{
+  int c = 0;
+  Stack_t operatori = init_stack(0);
+  while((c = getchar() != EOF) && (c != '\n')){
+    if(isalpha(c)){
+      add_to_stack(expression, c);
+    }
+    else{
+      add_to_stack(operatori, c);
+      if(sign_operation(expression, operatori) == false){
+	destruct(operatori);
+	destruct(expression);
+	return false;
+      }
+    }
+  }
+  return true;
+}
+
+int main(void)
+{
+  uint8_t optiune = 0;
+  Stack_t expression = init_stack(0);
+  do{
+    printf("Alegeti optiunea :\n1.Citire expresie in forma poloneza\n2.Calculare expresie\n");
+    if(scanf("%hhd", &optiune) != 1){
+      break;
+    }
+    else{
+      getchar();
+      switch(optiune){
+      case 1:
+	if(parse_expression(expression) == false){
+	  optiune = 3;
+	}
+	else{
+	  show(expression);
+	}
+	break;
+      case 2:
+	calculate_expression;
+	break;
+      default:
+	destruct(expression);
+	break;
+      }
+    }
+  }while(optiune > 0 && optiune < 3);
+
+  return 0;
+}

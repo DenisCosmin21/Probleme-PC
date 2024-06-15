@@ -1,0 +1,38 @@
+#ifndef __Stack_t
+#define __Stack_t
+
+typedef enum
+  {
+    Char,
+    Int
+  }Type_t;
+
+typedef union
+{
+  char ch;
+  int val;
+}Value_t;
+
+struct Stack
+{
+  size_t top, max;
+  struct
+  {
+    Value_t value;
+    Type_t tip;
+  } *values;
+};
+
+typedef struct Stack * Stack_t;
+
+bool init_stack(Stack_t);
+
+bool push(Stack_t, Value_t);
+
+bool pop(Stack_t, Value_t *);
+
+bool peek(Stack_t, Value_t *);
+
+bool destruct(Stack_t);
+
+#endif

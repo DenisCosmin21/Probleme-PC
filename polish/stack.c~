@@ -1,0 +1,28 @@
+#include <stdio.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <assert.h>
+
+Stack_t init_stack(void)
+{
+  Stack_t new_stack = malloc(sizeof(Stack_t*));
+  assert(new_stack != NULL);
+  new_stack->top = 0;
+  new_stack->max = 0;
+  new_stack->values = NULL;
+  return new_stack;
+}
+
+void alloc(Stack_t stack)
+{
+  stack->max = (stack->max < 4) ? (stack->max + 1) : (stack->max / 2 * 3);
+  stack->values = realloc(stack->values, stack->max * sizeof(Stack_t *));
+  assert(stack->values != NULL);
+}
+
+void push(Stack_t stack, Value_t value)
+{
+  if(stack->top == stack->max){
+    alloc(stack);
+  }
+  stack->values[stack->top] = value;

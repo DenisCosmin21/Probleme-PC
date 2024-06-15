@@ -1,0 +1,9 @@
+#ifndef LIST_TP
+
+#define LIST_TP
+
+typedef struct lista_t * lista;
+
+struct lista_t* initialize_list(void)
+{
+  
